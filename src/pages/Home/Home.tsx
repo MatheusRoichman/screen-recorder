@@ -19,6 +19,15 @@ type Controls = {
 
 type ControlKeys = keyof Controls;
 
+const statusLabels: Record<RecordingStatusEnum, string> = {
+  [RecordingStatusEnum.IDLE]: "Idle",
+  [RecordingStatusEnum.RECORDING]: "Recording",
+  [RecordingStatusEnum.PAUSED]: "Paused",
+  [RecordingStatusEnum.PERMISSION_DENIED]:
+    "Permission denied. Please grant permission to record screen.",
+  [RecordingStatusEnum.UNKNOWN_ERROR]: "Unknown error. Please try again.",
+};
+
 export const Home = () => {
   const [controls, setControls] = useState<Controls>({
     statusRec: false,
@@ -51,14 +60,20 @@ export const Home = () => {
   );
 
   return (
-    <main className="bg-slate-600 h-screen w-screen text-white">
-      <h1>{status}</h1>
-      {mediaBlobUrl ? (
-        <section>
-          <video src={mediaBlobUrl} controls autoPlay loop></video>
-        </section>
-      ) : null}
-      <aside>
+    <main className="bg-slate-600 h-screen w-screen text-white flex flex-col justify-center items-center gap-4">
+      <h1>Status: {statusLabels[status]}</h1>
+      <section className="px-4  w-full">
+        {mediaBlobUrl ? (
+          <video
+            className="w-full mx-auto max-w-2xl bg-gray-300 aspect-video border-2 border-white"
+            src={mediaBlobUrl}
+            controls
+            autoPlay
+            loop
+          />
+        ) : null}
+      </section>
+      <aside className="flex gap-4 items-center">
         <button onClick={() => handleClick("isAudioMuted")}>
           {controls.isAudioMuted && isRecording ? (
             <IoMdMicOff size={35} />
@@ -66,17 +81,15 @@ export const Home = () => {
             <IoMdMic size={35} />
           )}
         </button>
-        <div>
-          {controls.statusRec && isRecording ? (
-            <button onClick={() => handleClick("statusRec")}>
-              <FaStop size={35} />
-            </button>
-          ) : (
-            <button onClick={() => handleClick("statusRec")}>
-              <MdScreenshotMonitor size={35} />
-            </button>
-          )}
-        </div>
+        {controls.statusRec && isRecording ? (
+          <button onClick={() => handleClick("statusRec")}>
+            <FaStop size={35} />
+          </button>
+        ) : (
+          <button onClick={() => handleClick("statusRec")}>
+            <MdScreenshotMonitor size={35} />
+          </button>
+        )}
         <button onClick={() => handleClick("statusCam")}>
           {controls.statusCam && isRecording ? (
             <MdOutlineVideocam size={35} />
